@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creditbridge — Bank Reviewer Micro-Loan Decision Portal</title>
+
+  <!-- Google Fonts: Space Grotesk, Inter, Noto Nastaliq Urdu, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@500;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       Creditbridge — Admin & Bank Reviewer Portal (CSS)
+       ========================================================================== */
+    :root {
+      --bg: #F8F5EF;
+      --ink: #232331;
+      --primary: #2B4570;
+      --primary-soft: #DCE3EE;
+      --accent: #E8735F;
+      --accent-soft: #FBE0DA;
+      --success: #6B9080;
+      --success-soft: #E3EBE6;
+      --danger: #C4553F;
+      --danger-soft: #F5E1DC;
+      --muted: #8B8779;
+      --line: #E4DFD3;
+      --card: #FFFFFF;
+
+      --sidebar-bg: #1B2B48;
+      --sidebar-dark: #121E33;
+      --sidebar-text: #B5C7DE;
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-urdu: 'Noto Nastaliq Urdu', serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --shadow-sm: 0 2px 8px -2px rgba(35, 35, 49, 0.04);
+      --shadow-card: 0 4px 16px -2px rgba(35, 35, 49, 0.05), 0 2px 6px -1px rgba(35, 35, 49, 0.03);
+      --shadow-hover: 0 10px 24px -4px rgba(35, 35, 49, 0.08), 0 4px 12px -2px rgba(35, 35, 49, 0.04);
+      --shadow-brand: 0 6px 18px rgba(43, 69, 112, 0.28);
+
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .display-font { font-family: var(--font-display); font-weight: 700; }
+    .mono-font { font-family: var(--font-mono); }
+
+    .app-container { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    .app-header {
+      height: 70px; background-color: var(--card); border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 28px;
+      z-index: 100; box-shadow: 0 2px 12px rgba(35, 35, 49, 0.03);
+    }
+
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .header-brand { display: flex; align-items: center; gap: 14px; }
+    .logo-icon-wrap {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #2B4570 0%, #1D2F4E 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; box-shadow: var(--shadow-brand); position: relative;
+    }
+    .logo-icon-wrap i { width: 22px; height: 22px; }
+    .logo-text h1 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -0.5px; }
+    .logo-text h1 span { color: var(--accent); }
+    .portal-badge { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: var(--primary); background: var(--primary-soft); padding: 2px 8px; border-radius: 6px; display: inline-block; margin-top: 3px; }
+
+    .header-search-wrap { flex: 1; max-width: 520px; margin: 0 30px; }
+    .header-search { display: flex; align-items: center; background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 4px 6px 4px 14px; transition: var(--transition-fast); }
+    .header-search:focus-within { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(43, 69, 112, 0.12); }
+    .search-icon { width: 18px; height: 18px; color: var(--muted); margin-right: 10px; flex-shrink: 0; }
+    .header-search input { background: transparent; border: none; outline: none; color: var(--ink); font-size: 0.88rem; font-family: var(--font-body); width: 100%; }
+    .search-shortcut { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); background: var(--card); border: 1px solid var(--line); padding: 2px 7px; border-radius: 6px; margin-right: 8px; flex-shrink: 0; }
+    .btn-search-go { background: var(--primary); color: #fff; border: none; padding: 7px 16px; border-radius: 8px; font-family: var(--font-display); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0; }
+    .btn-search-go:hover { background: #1D2F4E; transform: translateY(-1px); }
+
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .icon-btn-chip { width: 38px; height: 38px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--ink); cursor: pointer; position: relative; transition: var(--transition-fast); }
+    .icon-btn-chip:hover { background: var(--line); color: var(--primary); }
+    .bell-dot { position: absolute; top: 7px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); border: 1.5px solid #fff; }
+
+    .system-status-pill { display: flex; align-items: center; gap: 8px; background: var(--success-soft); border: 1px solid rgba(107, 144, 128, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; color: var(--success); font-weight: 600; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--success); position: relative; }
+    .status-dot.online::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 50%; border: 1.5px solid var(--success); animation: statusPulse 2s infinite; }
+    @keyframes statusPulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+
+    .lang-toggle-wrapper { display: flex; background: var(--bg); border-radius: 8px; padding: 3px; border: 1px solid var(--line); }
+    .lang-btn { background: transparent; border: none; color: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 0.78rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: var(--transition-fast); }
+    .lang-btn.active { background: var(--ink); color: var(--bg); }
+
+    .user-profile-badge { display: flex; align-items: center; gap: 10px; padding: 4px 8px 4px 4px; border-radius: 12px; cursor: pointer; transition: var(--transition-fast); }
+    .user-profile-badge:hover { background: var(--bg); }
+    .avatar-wrap { position: relative; }
+    .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); font-family: var(--font-display); font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary); }
+    .avatar-status { position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--success); border: 2px solid #fff; }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); line-height: 1.2; }
+    .user-role { font-size: 0.72rem; color: var(--muted); }
+    .profile-arrow { width: 16px; height: 16px; color: var(--muted); }
+
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+
+    .app-sidebar {
+      width: 270px; background: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--sidebar-dark) 100%);
+      display: flex; flex-direction: column; padding: 24px 16px; justify-content: space-between; flex-shrink: 0;
+      box-shadow: 4px 0 16px rgba(18, 30, 51, 0.15);
+    }
+    .sidebar-scroll-content { display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
+    .sidebar-menu-title { font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #82A0D0; margin-bottom: 12px; padding-left: 12px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 6px; }
+    
+    .nav-item {
+      display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px;
+      color: var(--sidebar-text); text-decoration: none; font-family: var(--font-display);
+      font-size: 0.9rem; font-weight: 500; transition: var(--transition-normal); outline: none;
+    }
+    .nav-icon { width: 18px; height: 18px; stroke: var(--sidebar-text); transition: var(--transition-fast); flex-shrink: 0; }
+    .nav-label { flex: 1; }
+    .nav-item:hover { background: var(--sidebar-hover); color: #FFFFFF; }
+    .nav-item:hover .nav-icon { stroke: #FFFFFF; }
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--accent) 0%, #D65A45 100%);
+      color: #FFFFFF; font-weight: 700; box-shadow: 0 6px 18px rgba(232, 115, 95, 0.35); border: none;
+    }
+    .nav-item.active .nav-icon { stroke: #FFFFFF; }
+    .nav-count-badge { background: var(--success-soft); color: var(--success); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+    .nav-item.active .nav-count-badge { background: #FFFFFF; color: var(--accent); }
+    .nav-pill-tag { background: rgba(255, 255, 255, 0.15); color: #FFFFFF; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; }
+
+    .sidebar-footer .dark-exec-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 16px; color: #FFFFFF; }
+    .dark-exec-card .model-header { display: flex; align-items: center; gap: 8px; color: var(--accent); font-family: var(--font-display); font-weight: 700; font-size: 0.88rem; margin-bottom: 10px; }
+    .dark-exec-card .model-header i { width: 18px; height: 18px; }
+    .dark-exec-card .model-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: #A0B2CD; margin-bottom: 6px; }
+    .dark-exec-card .model-row strong { color: #fff; font-family: var(--font-mono); }
+    .text-success-bright { color: #8ED0A9 !important; }
+
+    .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 4px 11px; border-radius: 20px; }
+    .badge-success { background: var(--success-soft); color: var(--success); }
+    .badge-accent { background: var(--accent-soft); color: var(--accent); }
+    .badge-neutral { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+    .badge-primary { background: var(--primary-soft); color: var(--primary); }
+    .badge-danger { background: var(--danger-soft); color: var(--danger); }
+
+    .main-content { flex: 1; overflow-y: auto; padding: 28px; background-color: var(--bg); }
+    .content-view { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .view-header h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--ink); }
+    .view-subtitle { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+
+    .approvals-grid { display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
+
+    .kit-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-card); transition: var(--transition-normal); }
+    .kit-card:hover { box-shadow: var(--shadow-hover); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-header h3 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+    .card-header h3 i { color: var(--primary); width: 18px; height: 18px; }
+
+    .filter-pills { display: flex; gap: 6px; }
+    .pill-btn { background: var(--bg); border: 1px solid var(--line); color: var(--muted); padding: 4px 10px; border-radius: 14px; font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .pill-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .table-responsive { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    .data-table th { padding: 12px 14px; background: var(--bg); color: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--line); }
+    .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); color: var(--ink); }
+    .data-table tbody tr { transition: var(--transition-fast); }
+    .data-table tbody tr:hover { background: rgba(228, 223, 211, 0.3); }
+
+    .btn-table-action { background: var(--primary-soft); color: var(--primary); border: none; padding: 5px 12px; border-radius: 6px; font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: var(--transition-fast); }
+    .btn-table-action:hover { background: var(--primary); color: #fff; }
+
+    .decision-panel-card { display: flex; flex-direction: column; }
+    .applicant-summary-box { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+    .applicant-summary-box h4 { font-family: var(--font-display); font-size: 1rem; color: var(--ink); }
+    .applicant-summary-box p { font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
+
+    .summary-metrics { display: flex; justify-content: space-between; font-size: 0.78rem; border-top: 1px solid var(--line); padding-top: 8px; }
+    .s-metric span { display: block; font-size: 0.7rem; color: var(--muted); }
+
+    .decision-options { margin-bottom: 16px; }
+    .decision-options label { font-size: 0.82rem; font-weight: 600; color: var(--ink); margin-bottom: 8px; display: block; }
+    .decision-btn-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .btn-decision {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px;
+      border: 1.5px solid var(--line); background: var(--card); color: var(--muted);
+      font-family: var(--font-display); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: var(--transition-fast);
+    }
+    .btn-decision i { width: 18px; height: 18px; }
+    .btn-dec-approve.active { background: var(--success-soft); color: var(--success); border-color: var(--success); }
+    .btn-dec-refer.active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+    .btn-dec-decline.active { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
+
+    .limit-setting-group, .comments-group { margin-bottom: 16px; }
+    .limit-label-row { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; }
+    .custom-range { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 4px; background: var(--line); outline: none; }
+    .custom-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; transition: transform 0.1s ease; }
+    .custom-range::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    .comments-group label { font-size: 0.82rem; color: var(--muted); display: block; margin-bottom: 6px; }
+    .comments-group textarea { width: 100%; background: var(--card); border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 12px; color: var(--ink); font-family: var(--font-body); font-size: 0.82rem; outline: none; resize: vertical; }
+
+    .btn { font-family: var(--font-display); font-weight: 600; border-radius: 12px; text-align: center; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; transition: var(--transition-fast); }
+    .btn-sm { padding: 9px 16px; font-size: 12px; }
+    .btn-accent { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(232, 115, 95, 0.2); }
+    .btn-accent:hover { background: #D65A45; transform: translateY(-1px); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-ghost { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+    .btn-ghost:hover { background: var(--line); color: var(--ink); }
+    .btn-block { width: 100%; justify-content: center; }
+
+    /* Modal Certificate */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(35, 35, 49, 0.7); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.2s ease;
+    }
+    .modal-dialog { background: var(--card); border: 1px solid var(--line); border-radius: 16px; width: 680px; max-width: 90vw; box-shadow: 0 18px 36px -18px rgba(35,35,49,0.3); overflow: hidden; }
+    .modal-header { padding: 16px 24px; background: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+    .ubl-cert-brand { display: flex; align-items: center; gap: 12px; color: #fff; }
+    .ubl-logo-symbol { background: #fff; color: var(--primary); font-family: var(--font-display); font-weight: 800; font-size: 1rem; padding: 4px 8px; border-radius: 6px; }
+    .ubl-cert-brand h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; }
+    .ubl-cert-brand span { font-size: 0.72rem; opacity: 0.85; }
+    .modal-close-btn { background: transparent; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; }
+
+    .cert-content { padding: 30px 40px; background: var(--bg); position: relative; }
+    .cert-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg); font-family: var(--font-display); font-size: 4rem; font-weight: 800; color: rgba(107, 144, 128, 0.08); letter-spacing: 4px; pointer-events: none; }
+    .cert-title-box { text-align: center; margin-bottom: 24px; }
+    .cert-title-box h2 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+    .cert-sub { font-size: 0.78rem; color: var(--accent); }
+
+    .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: var(--card); border: 1px solid var(--line); padding: 16px; border-radius: 10px; margin-bottom: 20px; }
+    .cert-detail-item span { display: block; font-size: 0.72rem; color: var(--muted); }
+    .cert-detail-item strong { font-size: 0.92rem; color: var(--ink); }
+
+    .cert-amount-banner { text-align: center; background: var(--success-soft); border: 1px solid var(--success); padding: 18px; border-radius: 12px; margin-bottom: 24px; }
+    .cert-amount-banner span { font-size: 0.75rem; font-weight: 600; color: var(--success); letter-spacing: 1px; }
+    .cert-amount-banner h1 { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; color: var(--ink); }
+    .cert-amount-banner p { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    .cert-footer-notes { display: flex; justify-content: space-between; align-items: flex-end; }
+    .qr-placeholder { border: 1px dashed var(--line); padding: 10px 16px; font-size: 0.68rem; color: var(--muted); text-align: center; }
+    .cert-stamps { display: flex; gap: 20px; }
+    .stamp-box { display: flex; flex-direction: column; align-items: center; font-size: 0.72rem; }
+    .stamp-title { color: var(--muted); font-size: 0.65rem; }
+    .stamp-sign { font-family: cursive; font-size: 1.1rem; color: var(--primary); margin: 2px 0; }
+    .stamp-date { color: var(--muted); }
+    .stamp-official { border: 2px double var(--success); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; color: var(--success); font-family: var(--font-display); font-weight: 700; font-size: 0.65rem; text-align: center; transform: rotate(-12deg); }
+
+    .modal-footer { padding: 14px 24px; background: var(--card); border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 12px; }
+
+    .text-primary { color: var(--primary); }
+    .text-accent { color: var(--accent); }
+    .text-success { color: var(--success); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Main App Shell -->
+  <div class="app-container">
+    
+    <!-- Top Header Bar -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="header-brand">
+          <div class="logo-icon-wrap">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <div class="logo-text">
+            <h1>Credit<span>bridge</span></h1>
+            <span class="portal-badge">UBL Micro-Lending Portal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Search Bar -->
+      <div class="header-search-wrap">
+        <div class="header-search">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="global-search-input" placeholder="Search customer by Name, Applicant ID, or CNIC..." />
+          <span class="search-shortcut">Ctrl + K</span>
+          <button class="btn-search-go" id="btn-search-go">Search</button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="icon-btn-chip" title="Notifications">
+          <i data-lucide="bell"></i>
+          <span class="bell-dot"></span>
+        </button>
+
+        <div class="system-status-pill" title="System Risk Engine Status">
+          <span class="status-dot online"></span>
+          <span class="status-text">Engine Active</span>
+        </div>
+
+        <div class="lang-toggle-wrapper" title="Switch Interface Language">
+          <button class="lang-btn active" id="lang-en-btn">EN</button>
+          <button class="lang-btn" id="lang-ur-btn">اردو</button>
+        </div>
+
+        <div class="user-profile-badge">
+          <div class="avatar-wrap">
+            <div class="avatar">AH</div>
+            <span class="avatar-status"></span>
+          </div>
+          <div class="user-info">
+            <span class="user-name">M. Asim Hanif</span>
+            <span class="user-role">Lead Credit Risk Officer</span>
+          </div>
+          <i data-lucide="chevron-down" class="profile-arrow"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- App Body Layout -->
+    <div class="app-body">
+
+      <!-- Left Sidebar Navigation -->
+      <aside class="app-sidebar">
+        <div class="sidebar-scroll-content">
+          
+          <div class="sidebar-section">
+            <div class="sidebar-menu-title">CORE MANAGEMENT</div>
+            <nav class="sidebar-nav">
+              <a href="index.html" class="nav-item">
+                <i data-lucide="layout-dashboard" class="nav-icon"></i>
+                <span class="nav-label">Overview Dashboard</span>
+                <span class="nav-pill-tag">Live</span>
+              </a>
+              <a href="inspector.html" class="nav-item">
+                <i data-lucide="user-search" class="nav-icon"></i>
+                <span class="nav-label">Customer Inspector</span>
+              </a>
+              <a href="approvals.html" class="nav-item active">
+                <i data-lucide="badge-check" class="nav-icon"></i>
+                <span class="nav-label">Loan Approvals Queue</span>
+                <span class="nav-count-badge">8</span>
+              </a>
+            </nav>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-menu-title">SYSTEM & POLICY</div>
+            <nav class="sidebar-nav">
+              <a href="config.html" class="nav-item">
+                <i data-lucide="sliders" class="nav-icon"></i>
+                <span class="nav-label">Statement Import & Policy</span>
+              </a>
+              <a href="audit.html" class="nav-item">
+                <i data-lucide="file-text" class="nav-icon"></i>
+                <span class="nav-label">System Audit Stream</span>
+              </a>
+            </nav>
+          </div>
+
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="model-info-card dark-exec-card">
+            <div class="model-header">
+              <i data-lucide="shield-check"></i>
+              <span>Credit Risk Engine v3.2</span>
+            </div>
+            <div class="model-body">
+              <div class="model-row"><span>Scale Range:</span> <strong>300 - 850</strong></div>
+              <div class="model-row"><span>Response Latency:</span> <strong>1.4 sec</strong></div>
+              <div class="model-row"><span>Security Standard:</span> <strong class="text-success-bright">Bank Verified</strong></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Workspace -->
+      <main class="main-content">
+        <section id="view-approvals" class="content-view">
+          <div class="view-header">
+            <div>
+              <h2>Bank Reviewer Micro-Loan Decision Portal</h2>
+              <p class="view-subtitle">Review pending applications and issue official pre-approval certificates.</p>
+            </div>
+            <div class="view-header-actions">
+              <span class="badge badge-success"><i data-lucide="building-2"></i> UBL Core Lending Connected</span>
+            </div>
+          </div>
+
+          <div class="approvals-grid">
+            
+            <!-- Queue Table -->
+            <div class="kit-card table-card queue-card">
+              <div class="card-header">
+                <h3><i data-lucide="clock"></i> Loan Evaluation Queue</h3>
+                <div class="filter-pills">
+                  <button class="pill-btn active" data-filter="all">All</button>
+                  <button class="pill-btn" data-filter="low">Low Risk</button>
+                  <button class="pill-btn" data-filter="med">Referred (Med)</button>
+                  <button class="pill-btn" data-filter="high">High Risk</button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Applicant ID</th>
+                      <th>Customer Name</th>
+                      <th>Score</th>
+                      <th>Risk Band</th>
+                      <th>Suggested Limit</th>
+                      <th>Decision Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="approvals-queue-tbody">
+                    <!-- Dynamic JS Injection -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Decision Panel -->
+            <div class="kit-card decision-panel-card">
+              <div class="card-header">
+                <h3><i data-lucide="gavel"></i> Credit Officer Action Panel</h3>
+                <span class="badge badge-primary" id="selected-applicant-badge">APP-81103-2026</span>
+              </div>
+
+              <div class="decision-panel-body">
+                <div class="applicant-summary-box">
+                  <h4 id="panel-applicant-name">Muhammad Asim Hanif</h4>
+                  <p id="panel-applicant-cnic" class="mono-font">CNIC: 35202-*******-1 | Phone: +92 300 8472910</p>
+                  
+                  <div class="summary-metrics">
+                    <div class="s-metric">
+                      <span>Credit Score</span>
+                      <strong id="panel-score-val" class="text-success mono-font">745</strong>
+                    </div>
+                    <div class="s-metric">
+                      <span>Risk Band</span>
+                      <strong id="panel-risk-val" class="text-success">Good — Low Risk</strong>
+                    </div>
+                    <div class="s-metric">
+                      <span>Recommended Cap</span>
+                      <strong id="panel-cap-val" class="text-primary display-font">PKR 150,000</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="decision-options">
+                  <label>Select Officer Decision:</label>
+                  <div class="decision-btn-group">
+                    <button class="btn-decision btn-dec-approve active" data-decision="PRE_APPROVED">
+                      <i data-lucide="check-circle-2"></i> PRE-APPROVE
+                    </button>
+                    <button class="btn-decision btn-dec-refer" data-decision="REFERRED">
+                      <i data-lucide="alert-circle"></i> REFER TO COMMITTEE
+                    </button>
+                    <button class="btn-decision btn-dec-decline" data-decision="DECLINED">
+                      <i data-lucide="x-circle"></i> DECLINE
+                    </button>
+                  </div>
+                </div>
+
+                <div class="limit-setting-group">
+                  <div class="limit-label-row">
+                    <label for="slider-approved-amount">Approved Micro-Loan Amount (PKR):</label>
+                    <strong id="lbl-approved-amount" class="text-success display-font">PKR 150,000</strong>
+                  </div>
+                  <input type="range" id="slider-approved-amount" min="0" max="150000" step="5000" value="150000" class="custom-range" />
+                </div>
+
+                <div class="comments-group">
+                  <label for="input-reviewer-notes">Officer Audit Notes & Observations:</label>
+                  <textarea id="input-reviewer-notes" placeholder="Enter review notes..." rows="3">Applicant demonstrates strong Raast monthly credit frequency and clean utility payment track record. Approved for maximum tier limit.</textarea>
+                </div>
+
+                <div class="panel-action-footer">
+                  <button class="btn btn-sm btn-accent btn-block" id="btn-submit-loan-decision">
+                    <i data-lucide="send"></i> Execute Decision & Generate Certificate
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: UBL LOAN CERTIFICATE ==================== -->
+  <div class="modal-backdrop hidden" id="modal-certificate">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="ubl-cert-brand">
+          <div class="ubl-logo-symbol">UBL</div>
+          <div>
+            <h3>UNITED BANK LIMITED</h3>
+            <span>Micro-Lending & Digital Credit Department</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btn-close-modal">&times;</button>
+      </div>
+
+      <div class="modal-body cert-content" id="printable-cert-area">
+        <div class="cert-watermark">PRE-APPROVED</div>
+        
+        <div class="cert-title-box">
+          <h2>CERTIFICATE OF MICRO-LOAN PRE-APPROVAL</h2>
+          <span class="cert-sub">Creditbridge Alternative Credit Engine</span>
+        </div>
+
+        <div class="cert-details-grid">
+          <div class="cert-detail-item">
+            <span>Customer Name:</span>
+            <strong id="cert-applicant-name">Muhammad Asim Hanif</strong>
+          </div>
+          <div class="cert-detail-item">
+            <span>Applicant ID:</span>
+            <strong id="cert-applicant-id" class="mono-font">APP-81103-2026</strong>
+          </div>
+          <div class="cert-detail-item">
+            <span>Masked CNIC:</span>
+            <strong id="cert-applicant-cnic" class="mono-font">35202-*******-1</strong>
+          </div>
+          <div class="cert-detail-item">
+            <span>Digital Credit Score:</span>
+            <strong id="cert-score" class="text-success mono-font">745 (Good — Low Risk)</strong>
+          </div>
+        </div>
+
+        <div class="cert-amount-banner">
+          <span>PRE-APPROVED MICRO-LOAN CAPACITY</span>
+          <h1 id="cert-amount-pkr" class="display-font">PKR 150,000</h1>
+          <p>Eligible for instant digital disbursement via Raast / UBL Digital Mobile Wallet.</p>
+        </div>
+
+        <div class="cert-footer-notes">
+          <div class="cert-qr-box">
+            <div class="qr-placeholder mono-font">QR CODE<br>[VERIFIED]</div>
+          </div>
+          <div class="cert-stamps">
+            <div class="stamp-box">
+              <span class="stamp-title">CREDIT RISK OFFICER</span>
+              <span class="stamp-sign">M. Asim Hanif</span>
+              <span class="stamp-date mono-font" id="cert-date">2026-07-29</span>
+            </div>
+            <div class="stamp-box stamp-official">
+              <span class="stamp-seal">UBL APPROVED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-sm btn-ghost" id="btn-print-cert">
+          <i data-lucide="printer"></i> Print Certificate
+        </button>
+        <button class="btn btn-sm btn-primary" id="btn-done-modal">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) lucide.createIcons();
+
+      const defaultApplicants = [
+        {
+          id: 'APP-81103-2026', name: 'Muhammad Asim Hanif', cnicMasked: '35202-*******-1', phone: '+92 300 8472910',
+          source: 'JazzCash & Raast Transfers', simMonths: 42, regStatus: 'Active Customer', nadraVerified: true,
+          monthlyCredits: [85000, 92000, 78000, 88000, 95000, 82000], monthlyDebits: [45000, 52000, 41000, 48000, 50000, 44000],
+          utilityBills: [8500, 9200, 7800, 8400, 9100, 8000], totalTransactions: 64, ublDecision: 'PRE_APPROVED', approvedLimitPKR: 150000,
+          reviewerNotes: 'Strong monthly credit regularity via Raast. Verified utility payment record. Maximum tier approved.'
+        },
+        {
+          id: 'APP-94201-2026', name: 'Fatima Bibi', cnicMasked: '42101-*******-4', phone: '+92 321 9823411',
+          source: 'EasyPaisa & Retail Wallet', simMonths: 60, regStatus: 'Active Customer', nadraVerified: true,
+          monthlyCredits: [45000, 62000, 38000, 55000, 42000, 68000], monthlyDebits: [38000, 48000, 35000, 45000, 39000, 52000],
+          utilityBills: [4500, 5200, 4100, 4800, 4300, 5000], totalTransactions: 48, ublDecision: 'REFERRED', approvedLimitPKR: 50000,
+          reviewerNotes: 'Medium risk profile. Income fluctuates between PKR 38k and 68k. Referred to credit committee.'
+        },
+        {
+          id: 'APP-55102-2026', name: 'Ali Raza', cnicMasked: '31202-*******-9', phone: '+92 345 6712390',
+          source: 'JazzCash Student Allowance', simMonths: 12, regStatus: 'Active Customer', nadraVerified: true,
+          monthlyCredits: [15000, 12000, 18000, 10000, 14000, 11000], monthlyDebits: [14500, 13000, 17500, 11000, 13800, 11200],
+          utilityBills: [1200, 1500, 1100, 1400, 1200, 1300], totalTransactions: 18, ublDecision: 'DECLINED', approvedLimitPKR: 0,
+          reviewerNotes: 'High risk category. Total spending exceeds income in 3 of 6 months. Low transaction volume.'
+        },
+        {
+          id: 'APP-67104-2026', name: 'Tariq Mahmood', cnicMasked: '35201-*******-3', phone: '+92 301 4455667',
+          source: 'Retail Merchant QR & Raast', simMonths: 36, regStatus: 'Active Customer', nadraVerified: true,
+          monthlyCredits: [110000, 115000, 108000, 120000, 112000, 118000], monthlyDebits: [60000, 65000, 58000, 62000, 61000, 63000],
+          utilityBills: [12000, 14000, 11500, 13000, 12500, 13500], totalTransactions: 92, ublDecision: 'PRE_APPROVED', approvedLimitPKR: 150000,
+          reviewerNotes: 'Exceptional retail merchant profile. High transaction frequency and predictable cash flow.'
+        },
+        {
+          id: 'APP-10205-2026', name: 'Usman Khan', cnicMasked: '17301-*******-7', phone: '+92 333 9988771',
+          source: 'Gig Economy Delivery Payouts', simMonths: 24, regStatus: 'Active Customer', nadraVerified: true,
+          monthlyCredits: [35000, 42000, 28000, 48000, 31000, 50000], monthlyDebits: [34000, 41000, 30000, 46000, 32000, 48000],
+          utilityBills: [3000, 3500, 2800, 3600, 3100, 3800], totalTransactions: 55, ublDecision: 'REFERRED', approvedLimitPKR: 50000,
+          reviewerNotes: 'Gig worker income is cyclical. High spending ratio triggers multiplier penalty.'
+        },
+        {
+          id: 'APP-30406-2026', name: 'Sana Ahmed', cnicMasked: '42201-*******-2', phone: '+92 313 2233445',
+          source: 'Digital Freelance Platform', simMonths: 30, regStatus: 'Active Customer', nadraVerified: true,
+          monthlyCredits: [140000, 155000, 135000, 148000, 160000, 142000], monthlyDebits: [50000, 55000, 48000, 52000, 54000, 51000],
+          utilityBills: [10000, 11000, 9500, 10500, 11500, 10200], totalTransactions: 70, ublDecision: 'PRE_APPROVED', approvedLimitPKR: 150000,
+          reviewerNotes: 'High-earning freelancer. Low variation and large living-within-means buffer (+65%).'
+        },
+        {
+          id: 'APP-88207-2026', name: 'Imran Shah', cnicMasked: '37405-*******-5', phone: '+92 302 7766554',
+          source: 'Occasional Raast Deposits', simMonths: 8, regStatus: 'Incomplete Account', nadraVerified: true,
+          monthlyCredits: [5000, 0, 8000, 2000, 0, 4000], monthlyDebits: [4800, 0, 7500, 1900, 0, 3800],
+          utilityBills: [0, 0, 0, 0, 0, 0], totalTransactions: 12, ublDecision: 'DECLINED', approvedLimitPKR: 0,
+          reviewerNotes: 'Insufficient transaction activity (<30 over 6 months). Low SIM tenure (8m). Ineligible.'
+        },
+        {
+          id: 'APP-44908-2026', name: 'Zohaib Hasan', cnicMasked: '35202-*******-8', phone: '+92 300 1122334',
+          source: 'IT Consultancy Transfers', simMonths: 50, regStatus: 'Active Customer', nadraVerified: true,
+          monthlyCredits: [180000, 195000, 175000, 190000, 185000, 200000], monthlyDebits: [70000, 75000, 68000, 72000, 71000, 74000],
+          utilityBills: [15000, 16000, 14500, 15500, 16500, 15000], totalTransactions: 88, ublDecision: 'PRE_APPROVED', approvedLimitPKR: 150000,
+          reviewerNotes: 'Top-tier applicant profile. Strong income regularity and zero risk indicators.'
+        }
+      ];
+
+      const savedApplicants = localStorage.getItem('cb_applicants');
+      let applicants = savedApplicants ? JSON.parse(savedApplicants) : defaultApplicants;
+
+      const savedWeights = localStorage.getItem('cb_weights');
+      const weights = savedWeights ? JSON.parse(savedWeights) : { w1: 0.35, w2: 0.25, w3: 0.25, w4: 0.15 };
+
+      const savedCutoffs = localStorage.getItem('cb_cutoffs');
+      const cutoffs = savedCutoffs ? JSON.parse(savedCutoffs) : { low: 700, med: 550 };
+
+      let selectedApplicantId = 'APP-81103-2026';
+      let currentFilter = 'all';
+
+      function calculateApplicantScores(app) {
+        const credits = app.monthlyCredits;
+        const debits = app.monthlyDebits;
+        const utilities = app.utilityBills;
+
+        const sumCredits = credits.reduce((a, b) => a + b, 0);
+        const meanCredits = sumCredits / credits.length;
+        const variance = credits.reduce((acc, c) => acc + Math.pow(c - meanCredits, 2), 0) / credits.length;
+        const stdDev = Math.sqrt(variance);
+        const cv = meanCredits > 0 ? (stdDev / meanCredits) : 1.0;
+
+        let s_ir = Math.max(0, Math.min(100, 100 * (1 - cv)));
+        if (credits.length < 3) s_ir = 50;
+
+        const sumDebits = debits.reduce((a, b) => a + b, 0);
+        const sumUtilities = utilities.reduce((a, b) => a + b, 0);
+
+        const lwm = sumCredits > 0 ? (sumCredits - sumDebits) / sumCredits : 0;
+        const er = sumDebits > 0 ? (sumUtilities / sumDebits) : 0;
+        let s_sd = Math.max(0, Math.min(100, (0.6 * lwm * 100) + (0.4 * er * 100)));
+
+        let deficitMonths = 0;
+        for (let i = 0; i < credits.length; i++) {
+          if (debits[i] > credits[i]) deficitMonths++;
+        }
+        if (deficitMonths >= 2) s_sd = s_sd * 0.8;
+
+        let s_tc = Math.min(100, (app.totalTransactions / 80) * 100);
+        const s_sim = Math.min(100, 100 * (Math.log(1 + app.simMonths) / Math.log(1 + 60)));
+
+        const composite = (weights.w1 * s_ir) + (weights.w2 * s_sd) + (weights.w3 * s_tc) + (weights.w4 * s_sim);
+        const digitalCreditScore = Math.round(300 + (composite / 100) * (850 - 300));
+
+        let riskBand = "High Risk";
+        let maxLoanLimit = 0;
+
+        if (digitalCreditScore >= cutoffs.low) {
+          riskBand = "Good — Low Risk";
+          maxLoanLimit = 150000;
+        } else if (digitalCreditScore >= cutoffs.med) {
+          riskBand = "Medium Risk";
+          maxLoanLimit = 50000;
+        } else {
+          riskBand = "High Risk";
+          maxLoanLimit = 0;
+        }
+
+        return { digitalCreditScore, riskBand, maxLoanLimit };
+      }
+
+      function renderQueueTable() {
+        const tbody = document.getElementById('approvals-queue-tbody');
+        tbody.innerHTML = '';
+
+        const filtered = applicants.filter(app => {
+          const res = calculateApplicantScores(app);
+          if (currentFilter === 'low') return res.riskBand.includes('Low');
+          if (currentFilter === 'med') return res.riskBand.includes('Medium');
+          if (currentFilter === 'high') return res.riskBand.includes('High');
+          return true;
+        });
+
+        filtered.forEach(app => {
+          const res = calculateApplicantScores(app);
+          const tr = document.createElement('tr');
+
+          let decisionBadge = `<span class="badge badge-success">PRE_APPROVED</span>`;
+          if (app.ublDecision === 'REFERRED') decisionBadge = `<span class="badge badge-accent">REFERRED</span>`;
+          if (app.ublDecision === 'DECLINED') decisionBadge = `<span class="badge badge-danger">DECLINED</span>`;
+
+          tr.innerHTML = `
+            <td><strong class="mono-font">${app.id}</strong></td>
+            <td>${app.name}</td>
+            <td><strong class="text-primary mono-font">${res.digitalCreditScore}</strong></td>
+            <td><span class="badge ${res.riskBand.includes('Low') ? 'badge-success' : res.riskBand.includes('Med') ? 'badge-accent' : 'badge-danger'}">${res.riskBand}</span></td>
+            <td class="mono-font">PKR ${res.maxLoanLimit.toLocaleString()}</td>
+            <td>${decisionBadge}</td>
+            <td>
+              <button class="btn-table-action" onclick="selectApplicant('${app.id}')">Select</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        selectApplicant(selectedApplicantId);
+      }
+
+      window.selectApplicant = function(appId) {
+        selectedApplicantId = appId;
+        const app = applicants.find(a => a.id === appId);
+        if (!app) return;
+
+        const res = calculateApplicantScores(app);
+
+        document.getElementById('selected-applicant-badge').textContent = app.id;
+        document.getElementById('panel-applicant-name').textContent = app.name;
+        document.getElementById('panel-applicant-cnic').textContent = `CNIC: ${app.cnicMasked} | Phone: ${app.phone}`;
+        document.getElementById('panel-score-val').textContent = res.digitalCreditScore;
+        document.getElementById('panel-risk-val').textContent = res.riskBand;
+        document.getElementById('panel-cap-val').textContent = `PKR ${res.maxLoanLimit.toLocaleString()}`;
+
+        document.querySelectorAll('.btn-decision').forEach(btn => btn.classList.remove('active'));
+        const targetBtn = document.querySelector(`.btn-decision[data-decision="${app.ublDecision}"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+
+        const slider = document.getElementById('slider-approved-amount');
+        slider.max = res.maxLoanLimit > 0 ? res.maxLoanLimit : 150000;
+        slider.value = app.approvedLimitPKR;
+        document.getElementById('lbl-approved-amount').textContent = `PKR ${app.approvedLimitPKR.toLocaleString()}`;
+
+        document.getElementById('input-reviewer-notes').value = app.reviewerNotes || '';
+      };
+
+      // Decision buttons
+      document.querySelectorAll('.btn-decision').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.btn-decision').forEach(b => b.classList.remove('active'));
+          e.currentTarget.classList.add('active');
+        });
+      });
+
+      // Filter Pills
+      document.querySelectorAll('.filter-pills .pill-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-pills .pill-btn').forEach(b => b.classList.remove('active'));
+          e.currentTarget.classList.add('active');
+          currentFilter = e.currentTarget.getAttribute('data-filter');
+          renderQueueTable();
+        });
+      });
+
+      document.getElementById('slider-approved-amount').addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        document.getElementById('lbl-approved-amount').textContent = `PKR ${val.toLocaleString()}`;
+      });
+
+      // Execute Decision Button
+      document.getElementById('btn-submit-loan-decision').addEventListener('click', () => {
+        const app = applicants.find(a => a.id === selectedApplicantId);
+        if (!app) return;
+
+        const activeDecisionBtn = document.querySelector('.btn-decision.active');
+        const decision = activeDecisionBtn ? activeDecisionBtn.getAttribute('data-decision') : 'PRE_APPROVED';
+        const approvedAmount = parseInt(document.getElementById('slider-approved-amount').value);
+        const notes = document.getElementById('input-reviewer-notes').value;
+
+        app.ublDecision = decision;
+        app.approvedLimitPKR = approvedAmount;
+        app.reviewerNotes = notes;
+
+        // Persist to localStorage
+        localStorage.setItem('cb_applicants', JSON.stringify(applicants));
+
+        const res = calculateApplicantScores(app);
+
+        document.getElementById('cert-applicant-name').textContent = app.name;
+        document.getElementById('cert-applicant-id').textContent = app.id;
+        document.getElementById('cert-applicant-cnic').textContent = app.cnicMasked;
+        document.getElementById('cert-score').textContent = `${res.digitalCreditScore} (${res.riskBand})`;
+        document.getElementById('cert-amount-pkr').textContent = `PKR ${approvedAmount.toLocaleString()}`;
+        document.getElementById('cert-date').textContent = new Date().toISOString().substring(0, 10);
+
+        document.getElementById('modal-certificate').classList.remove('hidden');
+
+        if (decision === 'PRE_APPROVED' && window.confetti) {
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+
+        renderQueueTable();
+      });
+
+      document.getElementById('btn-close-modal').addEventListener('click', () => {
+        document.getElementById('modal-certificate').classList.add('hidden');
+      });
+      document.getElementById('btn-done-modal').addEventListener('click', () => {
+        document.getElementById('modal-certificate').classList.add('hidden');
+      });
+      document.getElementById('btn-print-cert').addEventListener('click', () => {
+        window.print();
+      });
+
+      // Global Search
+      function performGlobalSearch() {
+        const query = document.getElementById('global-search-input').value.trim().toUpperCase();
+        if (!query) return;
+        const matched = applicants.find(a => a.id.toUpperCase().includes(query) || a.cnicMasked.includes(query) || a.name.toUpperCase().includes(query));
+        if (matched) {
+          window.location.href = `inspector.html?id=${matched.id}`;
+        } else {
+          window.location.href = `inspector.html?id=NON_EXISTENT`;
+        }
+      }
+
+      document.getElementById('btn-search-go').addEventListener('click', performGlobalSearch);
+      document.getElementById('global-search-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performGlobalSearch();
+      });
+
+      // Language Switcher
+      document.getElementById('lang-en-btn').addEventListener('click', () => {
+        document.getElementById('lang-en-btn').classList.add('active');
+        document.getElementById('lang-ur-btn').classList.remove('active');
+        document.body.classList.remove('lang-ur');
+      });
+
+      document.getElementById('lang-ur-btn').addEventListener('click', () => {
+        document.getElementById('lang-ur-btn').classList.add('active');
+        document.getElementById('lang-en-btn').classList.remove('active');
+        document.body.classList.add('lang-ur');
+      });
+
+      // Initialize
+      renderQueueTable();
+    });
+  </script>
+</body>
+</html>
